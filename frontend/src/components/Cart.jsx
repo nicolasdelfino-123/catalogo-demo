@@ -49,6 +49,7 @@ export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClos
   const navigate = useNavigate();
   const location = useLocation();
   const isWholesale = location.pathname.startsWith("/mayorista");
+  const pricePrefix = isWholesale ? "US$" : "$";
 
 
   const isRouteMode = controlledOpen === undefined && controlledOnClose === undefined;
@@ -343,7 +344,7 @@ Pago: ${customerData.payment}
                           </h4>
                           <p className="text-gray-900 font-semibold">
                             {getItemPrice(item) !== null
-                              ? `$${getItemPrice(item).toLocaleString("es-AR")}`
+                              ? `${pricePrefix}${getItemPrice(item).toLocaleString("es-AR")}`
                               : "Consultar"}
                           </p>
                           {getSelectedMl(item) && (
@@ -399,7 +400,7 @@ Pago: ${customerData.payment}
 
                         <div className="text-right font-semibold">
                           {getItemPrice(item) !== null
-                            ? `$${(getItemPrice(item) * Number(item.quantity || 0)).toLocaleString("es-AR")}`
+                            ? `${pricePrefix}${(getItemPrice(item) * Number(item.quantity || 0)).toLocaleString("es-AR")}`
                             : "Consultar"}
                         </div>
 
@@ -418,7 +419,7 @@ Pago: ${customerData.payment}
             Subtotal <span className="text-sm text-gray-400">(sin envío)</span> :
           </span>
           <span className="font-semibold">
-            ${total.toLocaleString("es-AR")}
+            {pricePrefix}{total.toLocaleString("es-AR")}
           </span>
         </div>
 
@@ -461,7 +462,7 @@ Pago: ${customerData.payment}
           <div className="flex items-center justify-between mb-4">
             <span className="text-xl font-semibold">Total:</span>
             <span className="text-2xl font-bold text-purple-600">
-              ${total.toLocaleString("es-AR")}
+              {pricePrefix}{total.toLocaleString("es-AR")}
             </span>
           </div>
 

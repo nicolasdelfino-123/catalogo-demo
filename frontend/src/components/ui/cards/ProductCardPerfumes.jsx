@@ -152,6 +152,7 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
     const finalPrice = isWholesale
         ? (wholesalePrice > 0 ? wholesalePrice : null)
         : (retailPrice > 0 ? retailPrice : null);
+    const pricePrefix = isWholesale ? "US$" : "$";
 
     const stock = Number(product?.stock ?? 0);
     const hasStock = stock > 0;
@@ -270,7 +271,7 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
                 <div className="mt-2">
                     {finalPrice !== null ? (
                         <span className="text-xl font-bold text-gray-900">
-                            ${finalPrice.toLocaleString("es-AR")}
+                            {pricePrefix}{finalPrice.toLocaleString("es-AR")}
                         </span>
                     ) : (
                         <span className="text-sm text-gray-400 italic">

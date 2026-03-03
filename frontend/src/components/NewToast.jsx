@@ -1,6 +1,24 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
+const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
+
+const normalizeImagePath = (u = "") => {
+    if (!u) return "";
+    if (u.startsWith("/admin/uploads/")) u = u.replace("/admin", "/public");
+    if (u.startsWith("/uploads/")) u = `/public${u}`;
+    return u;
+};
+
+const toAbsUrl = (u = "") => {
+    u = normalizeImagePath(u);
+    if (!u) return "";
+    if (/^https?:\/\//i.test(u)) return u;
+    if (u.startsWith("/public/")) return `${API}${u}`;
+    if (u.startsWith("/")) return u;
+    return `${API}/${u}`;
+};
+
 const toastRoot = document.getElementById("toast-root") || (() => {
     const el = document.createElement("div");
     el.id = "toast-root";
@@ -31,6 +49,17 @@ export default function NewToast({ toast, onClose }) {
     }, [toast]);
 
     if (!visible) return null;
+    const isWholesale = window.location.pathname.startsWith("/mayorista");
+    const pricePrefix = isWholesale ? "US$" : "$";
+    const toastImage = toAbsUrl(data?.product?.image || data?.product?.image_url || "");
+    const selectedMl = (() => {
+        const raw =
+            data?.product?.selected_size_ml ??
+            data?.product?.volume_ml ??
+            data?.product?.ml;
+        const n = Number(raw);
+        return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+    })();
 
     const toastElement = (
         <div
@@ -39,11 +68,14 @@ export default function NewToast({ toast, onClose }) {
         >
             <div className="bg-green-500 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center space-x-3 max-w-sm">
                 {/* Imagen */}
-                {data?.product?.image && (
+                {toastImage && (
                     <img
-                        src={data.product.image}
+                        src={toastImage}
                         alt={data.product.name || "Producto"}
                         className="w-12 h-12 rounded-md object-cover border border-white/20"
+                        onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                        }}
                     />
                 )}
 
@@ -52,10 +84,13 @@ export default function NewToast({ toast, onClose }) {
                     <span className="font-semibold">{data?.message}</span>
                     {data?.product && (
                         <>
-                            <span className="text-sm">{data.product.name}</span>
+                            <span className="text-sm">
+                                {data.product.name}
+                                {selectedMl ? ` · ${selectedMl}ml` : ""}
+                            </span>
                             <span className="text-sm font-medium">
                                 {data.product.price !== null && data.product.price !== undefined
-                                    ? `$${data.product.price.toLocaleString("es-AR")}`
+                                    ? `${pricePrefix}${data.product.price.toLocaleString("es-AR")}`
                                     : "Consultar"}
                             </span>
 

@@ -223,6 +223,7 @@ export default function ProductDetailNuevo() {
     const finalPrice = isWholesale
         ? (wholesalePrice > 0 ? wholesalePrice : null)
         : (retailPrice > 0 ? retailPrice : null);
+    const pricePrefix = isWholesale ? "US$" : "$";
 
     /* =========================
        EFFECTS
@@ -397,7 +398,7 @@ export default function ProductDetailNuevo() {
 
                         <div className="text-4xl font-bold text-purple-600 mb-4">
                             {finalPrice !== null
-                                ? `$${Number(finalPrice).toLocaleString("es-AR")}`
+                                ? `${pricePrefix}${Number(finalPrice).toLocaleString("es-AR")}`
                                 : "Consultar"}
                         </div>
                         {sizeOptions.length > 0 && (

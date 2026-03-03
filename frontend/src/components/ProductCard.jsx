@@ -57,6 +57,7 @@ export default function ProductCard({ product }) {
   const finalPrice = isWholesale
     ? (wholesalePrice > 0 ? wholesalePrice : null)
     : retailPrice;
+  const pricePrefix = isWholesale ? "US$" : "$";
 
 
 
@@ -169,7 +170,7 @@ export default function ProductCard({ product }) {
         <div className="mb-3 text-center">
           {finalPrice !== null ? (
             <span className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-600">
-              ${finalPrice.toLocaleString("es-AR")}
+              {pricePrefix}{finalPrice.toLocaleString("es-AR")}
             </span>
           ) : (
             <span className="text-sm text-gray-400 italic">

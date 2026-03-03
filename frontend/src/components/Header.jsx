@@ -27,6 +27,60 @@ const toAbsUrl = (u = "") => {
   return `${API}/${u}`;
 };
 
+const parseMoney = (value) => {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  const normalized = String(value).replace(/\./g, "").replace(",", ".").trim();
+  const n = Number(normalized);
+  return Number.isFinite(n) ? n : null;
+};
+
+const getWholesaleSearchPrice = (product) => {
+  const direct =
+    parseMoney(product?.price_wholesale) ??
+    parseMoney(product?.priceWholesale) ??
+    parseMoney(product?.wholesale_price) ??
+    parseMoney(product?.wholesalePrice);
+  if (direct && direct > 0) return direct;
+
+  const rawVolumeOptions = (() => {
+    if (Array.isArray(product?.volume_options)) return product.volume_options;
+    if (Array.isArray(product?.volumeOptions)) return product.volumeOptions;
+    if (typeof product?.volume_options === "string") {
+      try {
+        const parsed = JSON.parse(product.volume_options);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    if (typeof product?.volumeOptions === "string") {
+      try {
+        const parsed = JSON.parse(product.volumeOptions);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    if (product?.volume_options && typeof product.volume_options === "object") {
+      return Object.values(product.volume_options);
+    }
+    if (product?.volumeOptions && typeof product.volumeOptions === "object") {
+      return Object.values(product.volumeOptions);
+    }
+    return [];
+  })();
+
+  for (const opt of rawVolumeOptions) {
+    const optionWholesale =
+      parseMoney(opt?.price_wholesale) ??
+      parseMoney(opt?.wholesale_price) ??
+      parseMoney(opt?.wholesalePrice);
+    if (optionWholesale && optionWholesale > 0) return optionWholesale;
+  }
+  return null;
+};
+
 
 
 export default function Header() {
@@ -415,39 +469,42 @@ export default function Header() {
                 {searchResults.length > 0 && (
                   <div className="absolute top-full w-full mt-1 max-w-md bg-white rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
 
-                    {searchResults.map((p) => (
-                      <div
-                        key={p.id}
-                        onClick={() => {
-                          const prefix = location.pathname.startsWith("/mayorista") ? "/mayorista" : "";
-                          navigate(`${prefix}/product/${p.id}`);
-                          setMobileSearchOpen(false);
-                        }}
+                    {searchResults.map((p) => {
+                      const wholesalePrice = getWholesaleSearchPrice(p);
+                      return (
+                        <div
+                          key={p.id}
+                          onClick={() => {
+                            const prefix = location.pathname.startsWith("/mayorista") ? "/mayorista" : "";
+                            navigate(`${prefix}/product/${p.id}`);
+                            setMobileSearchOpen(false);
+                          }}
 
-                        className="flex items-center p-3 hover:bg-gray-300 cursor-pointer border-b border-gray-200 last:border-b-0"
-                      >
-                        <img
-                          src={toAbsUrl(p.image_url) || "/sin_imagen.jpg"}
-                          alt={p.name}
-                          className="w-12 h-12 object-contain rounded mr-3"
-                          onError={(e) => { e.currentTarget.src = "/sin_imagen.jpg"; }}
-                        />
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-800">{p.name}</div>
-                          <div className="text-green-600 font-bold text-sm">
-                            {location.pathname.startsWith("/mayorista")
-                              ? (
-                                p.price_wholesale && Number(p.price_wholesale) > 0
-                                  ? `$${Number(p.price_wholesale).toLocaleString("es-AR")}`
-                                  : "Consultar"
-                              )
-                              : `$${Number(p.price).toLocaleString("es-AR")}`
-                            }
+                          className="flex items-center p-3 hover:bg-gray-300 cursor-pointer border-b border-gray-200 last:border-b-0"
+                        >
+                          <img
+                            src={toAbsUrl(p.image_url) || "/sin_imagen.jpg"}
+                            alt={p.name}
+                            className="w-12 h-12 object-contain rounded mr-3"
+                            onError={(e) => { e.currentTarget.src = "/sin_imagen.jpg"; }}
+                          />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-800">{p.name}</div>
+                            <div className="text-green-600 font-bold text-sm">
+                              {location.pathname.startsWith("/mayorista")
+                                ? (
+                                  wholesalePrice && wholesalePrice > 0
+                                    ? `US$${Number(wholesalePrice).toLocaleString("es-AR")}`
+                                    : "Consultar"
+                                )
+                                : `$${Number(p.price).toLocaleString("es-AR")}`
+                              }
+                            </div>
+
                           </div>
-
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
                 {/* 👆 Fin caja de resultados */}

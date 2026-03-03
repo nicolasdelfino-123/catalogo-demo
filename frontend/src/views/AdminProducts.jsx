@@ -205,6 +205,12 @@ const uniqPush = (arr = [], url = "") => {
     return Array.from(set);
 };
 
+const isDefaultImage = (u = "") => {
+    const s = String(u || "").trim();
+    if (!s) return false;
+    return s === String(sinImagen) || /sin_imagen/i.test(s);
+};
+
 // Evita que el número cambie con la rueda del mouse o flechas ↑ ↓
 const noSpin = {
     onWheel: (e) => e.currentTarget.blur(),
@@ -213,7 +219,7 @@ const noSpin = {
     },
 };
 
-const normalizeVolumeOptions = (rows = []) =>
+const normalizeVolumeOptions = (rows = [], { keepWithoutMl = false } = {}) =>
     (rows || [])
         .map((row) => {
             const ml = Number(row?.ml);
@@ -231,7 +237,32 @@ const normalizeVolumeOptions = (rows = []) =>
                     Number.isFinite(priceWholesale) && priceWholesale > 0 ? priceWholesale : null,
             };
         })
-        .filter((row) => row.ml != null && row.ml > 0);
+        .filter((row) => row.price != null && (keepWithoutMl || (row.ml != null && row.ml > 0)));
+
+const sortVolumeOptions = (a, b) => {
+    const aml = a?.ml ?? null;
+    const bml = b?.ml ?? null;
+    if (aml == null && bml == null) return 0;
+    if (aml == null) return 1;
+    if (bml == null) return -1;
+    return aml - bml;
+};
+
+const volumeOptionKey = (row) => (row?.ml == null ? "__without_ml__" : String(Number(row.ml)));
+
+const upsertVolumeOption = (rows = [], row) => {
+    const current = normalizeVolumeOptions(rows, { keepWithoutMl: true });
+    const key = volumeOptionKey(row);
+    const filtered = current.filter((x) => volumeOptionKey(x) !== key);
+    return [...filtered, row].sort(sortVolumeOptions);
+};
+
+const clearPricingInputs = (state) => ({
+    ...state,
+    volume_ml: "",
+    price: "",
+    price_wholesale: "",
+});
 
 // ----- Componente principal -----
 export default function AdminProducts() {
@@ -261,6 +292,14 @@ export default function AdminProducts() {
     const [importOpen, setImportOpen] = useState(false)
     const [importing, setImporting] = useState(false)
     const [showZeroStockModal, setShowZeroStockModal] = useState(false)
+    const [showPriceWithoutMlModal, setShowPriceWithoutMlModal] = useState(false)
+    const [pendingPriceWithoutMlRow, setPendingPriceWithoutMlRow] = useState(null)
+    const [showMissingPricingModal, setShowMissingPricingModal] = useState(false)
+    const [saveSuccessModal, setSaveSuccessModal] = useState({
+        open: false,
+        action: "",
+        category: "",
+    })
 
     const token = localStorage.getItem("token") || localStorage.getItem("admin_token")
     if (!token) return <div className="p-6">No autorizado</div>
@@ -446,10 +485,11 @@ export default function AdminProducts() {
             setForm((prev) => {
                 if (!prev) return prev;
                 const u = normalizeImagePath(data.url);
+                const cleanedGallery = (prev.image_urls || []).filter((img) => !isDefaultImage(img));
                 return {
                     ...prev,
-                    image_url: (asMain || !prev.image_url) ? u : prev.image_url,
-                    image_urls: uniqPush(prev.image_urls, u),
+                    image_url: (asMain || !prev.image_url || isDefaultImage(prev.image_url)) ? u : prev.image_url,
+                    image_urls: uniqPush(cleanedGallery, u),
                 };
             });
         } catch (e) {
@@ -623,9 +663,17 @@ export default function AdminProducts() {
                 }
             }
 
+            const selectedCategoryName =
+                ID_TO_CATEGORY_NAME[payload.category_id] || "Sin categoría";
+            const action = form.id ? "actualizado" : "creado";
+
             setForm(null);
             fetchAll();
-            alert(form.id ? "Producto actualizado" : "Producto creado exitosamente");
+            setSaveSuccessModal({
+                open: true,
+                action,
+                category: selectedCategoryName,
+            });
 
         } catch (error) {
             console.error("Error saving product:", error);
@@ -633,14 +681,24 @@ export default function AdminProducts() {
         }
     };
 
-    const save = async (e) => {
-        e.preventDefault();
+    const continueSaveFlow = async () => {
         const stock = Math.max(0, Math.floor(Number(form?.stock) || 0));
         if (stock === 0) {
             setShowZeroStockModal(true);
             return;
         }
         await doSaveProduct();
+    };
+
+    const save = async (e) => {
+        e.preventDefault();
+        const hasConfiguredRows =
+            normalizeVolumeOptions(form?.volume_options || [], { keepWithoutMl: true }).length > 0;
+        if (!hasConfiguredRows) {
+            setShowMissingPricingModal(true);
+            return;
+        }
+        await continueSaveFlow();
     };
 
     const filtered = products.filter((p) => {
@@ -698,7 +756,7 @@ export default function AdminProducts() {
                         category_id: 1,
                         is_active: true,
 
-                        image_url: sinImagen,
+                        image_url: "",
                         image_urls: [],
 
                         price: "",
@@ -799,7 +857,7 @@ export default function AdminProducts() {
                             <th className="p-2 text-left">Producto</th>
                             <th className="p-2 text-left">Descripción corta</th>
                             <th className="p-2 text-left">Descripción larga</th>
-                            <th className="p-2">Precio</th>
+                            <th className="p-2">Precio minorista</th>
 
                             <th className="p-2">Mayorista</th>
 
@@ -1007,10 +1065,15 @@ export default function AdminProducts() {
                                             const flavorStockMode = Boolean(p?.flavor_stock_mode ?? false);
                                             const sum = sumActiveFlavorStock(catalog);
 
-                                            // 👇 si no tiene imagen cargada, asignamos default
+                                            // si no tiene imagen cargada, queda vacío y el preview usa fallback
                                             const safeImage = (p.image_url && String(p.image_url).trim())
                                                 ? p.image_url
-                                                : sinImagen;
+                                                : "";
+                                            let safeGallery = Array.isArray(p.image_urls) ? p.image_urls : [];
+                                            safeGallery = safeGallery.filter((u) => !isDefaultImage(u));
+                                            if (safeImage && !isDefaultImage(safeImage)) {
+                                                safeGallery = uniqPush(safeGallery, safeImage);
+                                            }
 
                                             setForm({
                                                 ...p,
@@ -1018,9 +1081,9 @@ export default function AdminProducts() {
                                                 price: Number(p.price) > 0 ? String(p.price) : "",
                                                 price_wholesale: p.price_wholesale ?? "", // ✅ NUEVO: trae mayorista al form
                                                 volume_ml: p.volume_ml ?? "",
-                                                volume_options: normalizeVolumeOptions(p.volume_options || []),
+                                                volume_options: normalizeVolumeOptions(p.volume_options || [], { keepWithoutMl: true }),
                                                 image_url: safeImage,                    // 👈 default en edición
-                                                image_urls: Array.isArray(p.image_urls) ? p.image_urls : (safeImage ? [safeImage] : []),
+                                                image_urls: safeGallery,
                                                 flavor_catalog: catalog,
                                                 flavor_enabled: p.flavor_enabled ?? (catalog.length > 0),
                                                 flavor_stock_mode: flavorStockMode,
@@ -1122,17 +1185,12 @@ export default function AdminProducts() {
                                     const price = Number(form.price);
                                     const priceWholesale = Number(form.price_wholesale);
 
-                                    if (!Number.isFinite(ml) || ml <= 0) {
-                                        alert("Ingresá mililitros válidos para agregar");
-                                        return;
-                                    }
                                     if (!Number.isFinite(price) || price <= 0) {
                                         alert("Ingresá precio minorista válido para agregar");
                                         return;
                                     }
-
                                     const row = {
-                                        ml: Math.floor(ml),
+                                        ml: Number.isFinite(ml) && ml > 0 ? Math.floor(ml) : null,
                                         price,
                                         price_wholesale:
                                             Number.isFinite(priceWholesale) && priceWholesale > 0
@@ -1140,12 +1198,16 @@ export default function AdminProducts() {
                                                 : null,
                                     };
 
+                                    if (row.ml == null) {
+                                        setPendingPriceWithoutMlRow(row);
+                                        setShowPriceWithoutMlModal(true);
+                                        return;
+                                    }
+
                                     setForm((prev) => {
-                                        const current = normalizeVolumeOptions(prev.volume_options || []);
-                                        const withoutSameMl = current.filter((x) => Number(x.ml) !== row.ml);
                                         return {
-                                            ...prev,
-                                            volume_options: [...withoutSameMl, row].sort((a, b) => a.ml - b.ml),
+                                            ...clearPricingInputs(prev),
+                                            volume_options: upsertVolumeOption(prev.volume_options || [], row),
                                         };
                                     });
                                 }}
@@ -1195,7 +1257,7 @@ export default function AdminProducts() {
                                 {(form.volume_options || []).map((row, idx) => (
                                     <div key={`${row.ml}-${idx}`} className="flex items-center justify-between text-sm border rounded px-3 py-2">
                                         <span>
-                                            {row.ml} ml · ${Number(row.price).toLocaleString("es-AR")}
+                                            {row.ml != null ? `${row.ml} ml` : "Sin ml"} · ${Number(row.price).toLocaleString("es-AR")}
                                             {Number(row.price_wholesale) > 0
                                                 ? ` · Mayorista $${Number(row.price_wholesale).toLocaleString("es-AR")}`
                                                 : ""}
@@ -1209,7 +1271,7 @@ export default function AdminProducts() {
                                                 onClick={() =>
                                                     setForm((prev) => ({
                                                         ...prev,
-                                                        volume_ml: row.ml,
+                                                        volume_ml: row.ml ?? "",
                                                         price: Number(row?.price) > 0 ? String(row.price) : "",
                                                         price_wholesale:
                                                             Number(row?.price_wholesale) > 0 ? String(row.price_wholesale) : "",
@@ -1531,8 +1593,109 @@ export default function AdminProducts() {
                                 </div>
                             </div>
                         )}
+
+                        {showMissingPricingModal && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]">
+                                <div className="bg-white rounded-lg p-5 w-full max-w-md space-y-4">
+                                    <p className="text-sm text-gray-800">
+                                        Hay una combinación de precios y mililitros sin agregar.
+                                        <br />
+                                        Debes presionar "agregar" antes de guardar.
+                                    </p>
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowMissingPricingModal(false)}
+                                            className="px-3 py-2 border rounded"
+                                        >
+                                            Volver a editar
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                setShowMissingPricingModal(false);
+                                                await continueSaveFlow();
+                                            }}
+                                            className="px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                                        >
+                                            Continuar de todos modos
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {showPriceWithoutMlModal && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]">
+                                <div className="bg-white rounded-lg p-5 w-full max-w-md space-y-4">
+                                    <p className="text-sm text-gray-800">
+                                        Estás cargando un precio minorista sin mililitros.
+                                        <br />
+                                        El producto se puede guardar igual y el precio quedará como precio general.
+                                    </p>
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowPriceWithoutMlModal(false);
+                                                setPendingPriceWithoutMlRow(null);
+                                            }}
+                                            className="px-3 py-2 border rounded"
+                                        >
+                                            Volver a editar
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowPriceWithoutMlModal(false);
+                                                if (pendingPriceWithoutMlRow) {
+                                                    setForm((prev) => ({
+                                                        ...clearPricingInputs(prev),
+                                                        volume_options: upsertVolumeOption(
+                                                            prev.volume_options || [],
+                                                            pendingPriceWithoutMlRow
+                                                        ),
+                                                    }));
+                                                }
+                                                setPendingPriceWithoutMlRow(null);
+                                            }}
+                                            className="px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                                        >
+                                            Entendido
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </form>
+            )}
+
+            {saveSuccessModal.open && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[70]">
+                    <div className="bg-white rounded-lg p-5 w-full max-w-md space-y-4">
+                        <p className="text-sm text-gray-800">
+                            Producto {saveSuccessModal.action} correctamente.
+                            <br />
+                            Agregado a la categoría <strong>{saveSuccessModal.category}</strong>.
+                        </p>
+                        <div className="flex justify-end">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setSaveSuccessModal({
+                                        open: false,
+                                        action: "",
+                                        category: "",
+                                    })
+                                }
+                                className="px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                            >
+                                Entendido
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {/* Modal de importación masiva */}
