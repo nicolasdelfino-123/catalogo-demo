@@ -359,13 +359,13 @@ export default function ProductDetailNuevo() {
             }
         }
 
-        // Si no venimos del grid, usamos returnTo si se proporcionó, sino /products
+        // Si no venimos del grid, usamos returnTo si se proporcionó, sino listado según modo
         if (location.state?.returnTo) {
             navigate(location.state.returnTo);
             return;
         }
 
-        navigate("/products");
+        navigate(`${prefix}/products`);
     };
 
     // Evita crash mientras carga productos o si el ID no existe.
@@ -377,7 +377,7 @@ export default function ProductDetailNuevo() {
                         {store.loading ? "Cargando producto..." : "Producto no encontrado"}
                     </h2>
                     <button
-                        onClick={() => navigate("/products")}
+                        onClick={() => navigate(`${prefix}/products`)}
                         className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                     >
                         Volver a productos
