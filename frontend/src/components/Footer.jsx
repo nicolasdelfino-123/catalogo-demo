@@ -55,7 +55,7 @@ const Footer = () => {
                         </div>
 
                         <div>
-                            <h4 className="font-semibold mb-4 uppercase tracking-wider text-sm text-gray-200">Ayuda</h4>
+                            <h4 className="font-semibold mb-4 uppercase tracking-wider text-sm text-gray-200">Información</h4>
                             <ul className="space-y-2 text-gray-400">
                                 <li>
                                     <Link
