@@ -43,7 +43,7 @@ export default function AccountDropdown() {
                     <button
                         onClick={() => {
                             setOpen(false);
-                            navigate("/admin/login");
+                            navigate("/admin/products");
                         }}
                         className="block w-full text-left px-3 py-2 text-gray-300 bg-transparent rounded-md hover:bg-[#1c1c1c] hover:text-amber-300 transition-all duration-200"
                     >
