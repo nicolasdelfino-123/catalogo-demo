@@ -259,7 +259,7 @@ export default function Header() {
     e.preventDefault();
 
     const doScroll = () => {
-      const el = document.getElementById("contacto");
+      const el = document.getElementById("asesoria");
       if (!el) return;
       // Altura del header sticky (medimos por si cambia)
       const headerH = document.querySelector("header")?.offsetHeight || 80;
@@ -445,11 +445,11 @@ export default function Header() {
               Mayoristas
             </Link> */}
             <a
-              href="/inicio#contacto"
+              href="/inicio#asesoria"
               onClick={goToContact}
               className="text-gray-300 hover:text-amber-300 transition-all duration-300"
             >
-              Contacto
+              Asesoría
             </a>
           </nav>
 

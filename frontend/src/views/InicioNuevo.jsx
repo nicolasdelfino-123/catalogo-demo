@@ -65,21 +65,25 @@ export default function InicioNuevo() {
                         Fragancias intensas • Elegancia oriental • Exclusividad
                     </p>
 
-                    <a
+                    {/* <a
                         href={WA_URL}
                         className="inline-block px-8 py-3 bg-[#232325] text-white rounded-lg font-medium tracking-wide hover:bg-black transition-colors"
                     >
                         Solicitar Asesoría
-                    </a>
+                    </a> */}
                 </div>
 
             </section>
 
             {/* PRODUCTOS */}
             <section className="max-w-7xl mx-auto px-2 sm:px-4 py-12">
-                <h2 className="text-2xl md:text-3xl font-serif font-semibold text-center mb-8 tracking-wide">
-                    Productos destacados
-                </h2>
+                <div className="text-center mb-10">
+                    <h2 className="text-2xl md:text-3xl font-serif font-semibold tracking-wide">
+                        Productos destacados
+                    </h2>
+
+                    <div className="w-16 h-[2px] bg-amber-500 mx-auto mt-4"></div>
+                </div>
 
                 {store.loading ? (
                     <p className="text-center">Cargando...</p>
@@ -97,7 +101,9 @@ export default function InicioNuevo() {
                     </div>
                 )}
             </section>
-            <Asesoria />
+            <section id="asesoria">
+                <Asesoria />
+            </section>
 
 
 

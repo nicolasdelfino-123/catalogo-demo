@@ -358,7 +358,7 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
                     <button
                         onClick={handleAddToCart}
                         disabled={!hasStock}
-                        className={`w-full px-1 py-2 sm:px-4 sm:py-3 rounded-lg font-serif text-sm md:text-lg whitespace-nowrap tracking-wide transition-colors duration-200 ${hasStock
+                        className={`w-full px-1 py-2 sm:px-5 sm:py-3 rounded-lg font-serif text-xs sm:text-sm md:text-lg whitespace-nowrap tracking-wide transition-colors duration-200 ${hasStock
                             ? "bg-black text-white hover:bg-stone-800"
                             : "bg-stone-300 text-stone-500 cursor-not-allowed"
                             }`}
