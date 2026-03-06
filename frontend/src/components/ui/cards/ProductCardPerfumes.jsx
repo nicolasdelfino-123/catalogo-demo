@@ -263,17 +263,17 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
         navigate(`${prefix}/product/${product.id}`, { state });
     };
     return (
-        <div className="bg-stone-50 rounded-xl border border-stone-200 hover:border-stone-300 transition-all duration-300 flex flex-col h-full">
+        <div className="bg-white rounded-xl border border-stone-100 shadow-sm hover:shadow-md hover:border-stone-200 transition-all duration-300 flex flex-col h-full">
 
             {/* Imagen */}
             <div
                 onClick={handleProductClick}
-                className="aspect-square bg-white flex items-center justify-center p-4 sm:p-6 cursor-pointer overflow-hidden"
+                className="aspect-square bg-gradient-to-b from-white to-stone-50 flex items-center justify-center p-6 sm:p-8 cursor-pointer overflow-hidden"
             >
                 <img
                     src={toAbsUrl(product?.image_url) || sinImagen}
                     alt={product?.name || "Producto"}
-                    className="max-h-full object-contain hover:scale-105 transition duration-500 ease-out"
+                    className="max-h-full object-contain transition-transform duration-500 ease-out hover:scale-110"
                     onError={(e) => { e.currentTarget.src = sinImagen; }}
                 />
             </div>
@@ -284,20 +284,20 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
                 {/* Nombre */}
                 <h3
                     onClick={handleProductClick}
-                    className="text-sm sm:text-lg font-medium text-stone-900 tracking-wide cursor-pointer hover:text-black line-clamp-2"
+                    className="text-sm sm:text-lg font-semibold text-stone-900 tracking-wide cursor-pointer hover:text-black line-clamp-2 text-center"
                 >
                     {product.name}
                 </h3>
 
                 {/* Categoría */}
-                <p className="text-[10px] sm:text-xs text-stone-500 uppercase tracking-widest mt-1">
+                <p className="text-[10px] sm:text-xs text-stone-400 uppercase tracking-widest mt-1 text-center">
                     {displayCategoryName}
                 </p>
 
                 {/* Precio */}
-                <div className="mt-2 sm:mt-4">
+                <div className="mt-2 sm:mt-4 text-center">
                     {finalPrice !== null ? (
-                        <span className="text-lg sm:text-2xl font-semibold text-black">
+                        <span className="text-xl sm:text-2xl font-semibold text-black tracking-tight">
                             {pricePrefix}{finalPrice.toLocaleString("es-AR")}
                         </span>
                     ) : (
@@ -358,7 +358,7 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
                     <button
                         onClick={handleAddToCart}
                         disabled={!hasStock}
-                        className={`w-full py-2 sm:py-3 rounded-md font-medium text-xs sm:text-sm tracking-wide transition-all duration-300 ${hasStock
+                        className={`w-full px-1 py-2 sm:px-4 sm:py-3 rounded-lg font-serif text-sm md:text-lg whitespace-nowrap tracking-wide transition-colors duration-200 ${hasStock
                             ? "bg-black text-white hover:bg-stone-800"
                             : "bg-stone-300 text-stone-500 cursor-not-allowed"
                             }`}
