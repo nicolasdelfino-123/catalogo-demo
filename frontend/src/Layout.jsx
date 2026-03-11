@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import injectContext, { Context } from "./js/store/appContext.jsx";
 import { setWholesaleMode } from "./utils/wholesaleMode.js";
@@ -26,6 +26,7 @@ import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import NewToast from "./components/NewToast.jsx";
 import FloatingButtons from "./components/FloatingButtons.jsx";
+import GlobalSpinner from "./components/GlobalSpinner.jsx";
 
 // Admin & Cuenta
 import AdminProducts from "./views/AdminProducts.jsx";
@@ -96,6 +97,7 @@ const ModeWatcher = () => {
 
 const Layout = () => {
   const { store, actions } = useContext(Context);
+  const [loading, setLoading] = useState(true);
 
   /*   const inicioImages = [
       heroBg, banner1, recargables, celu,
@@ -123,6 +125,7 @@ const Layout = () => {
       if (!store.products || store.products.length === 0) {
         await actions.fetchProducts?.();
       }
+      setLoading(false);
     };
 
     init();
@@ -131,6 +134,7 @@ const Layout = () => {
 
   return (
     <div>
+      {loading && <GlobalSpinner />}
       <BrowserRouter>
 
         {/* 🔥 Detecta si estamos en /mayorista */}
