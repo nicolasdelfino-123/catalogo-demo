@@ -1073,7 +1073,7 @@ export default function AdminProducts() {
             <h1 className="text-2xl font-bold mb-4 text-center">Admin Productos</h1>
 
             {/* Barra superior */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-3 mb-4">
                 <div className="flex flex-col flex-1 min-w-0">
                     <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
                         Buscar
