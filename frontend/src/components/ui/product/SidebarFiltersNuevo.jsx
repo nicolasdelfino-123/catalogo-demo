@@ -389,7 +389,7 @@ export default function SidebarFiltersNuevo({
                 <div className="md:hidden mb-3">
                     <button
                         onClick={() => setOpen(true)}
-                        className="inline-flex items-center gap-2 px-3 py-2 border rounded-md"
+                        className="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm"
                     >
                         <Menu size={18} />
                         Ver barra lateral
