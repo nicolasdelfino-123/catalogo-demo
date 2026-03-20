@@ -340,7 +340,12 @@ Pago: ${customerData.payment}
                       className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded"
                       loading="lazy"
                       decoding="async"
-                      onError={(e) => { e.currentTarget.src = "/sin_imagen.jpg"; }}
+                      onError={(e) => {
+                        if (!e.currentTarget.src.endsWith("/sin_imagen.jpg")) {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "/sin_imagen.jpg";
+                        }
+                      }}
                     />
 
                     <div className="flex-1">
