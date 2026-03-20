@@ -3,6 +3,7 @@ import { Context } from "../../../js/store/appContext.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import sinImagen from "@/assets/sin_imagen.jpg";
 import { formatPrice } from "../../../utils/price.js";
+import { getDisplayCategoryName } from "../../../utils/perfumeCategories.js";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
 
@@ -45,33 +46,6 @@ const parseStock = (value) => {
     if (value === null || value === undefined || value === "") return null;
     const n = Number(value);
     return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : null;
-};
-
-const CATEGORY_ID_TO_NAME = {
-    1: "Masculinos",
-    2: "Femeninos",
-    3: "Unisex",
-    4: "Cremas",
-    5: "Body Splash Victoria Secret",
-    // compatibilidad de productos viejos
-    6: "Masculinos",
-};
-
-const LEGACY_CATEGORY_NAME_TO_CURRENT = {
-    "Vapes Desechables": "Masculinos",
-    "Pods Recargables": "Femeninos",
-    "Líquidos": "Unisex",
-    "Resistencias": "Cremas",
-    "Celulares": "Body Splash Victoria Secret",
-    "Perfumes": "Masculinos",
-};
-
-const getDisplayCategoryName = (product) => {
-    const byId = CATEGORY_ID_TO_NAME[Number(product?.category_id)];
-    if (byId) return byId;
-    const raw = String(product?.category_name || "").trim();
-    if (!raw) return "Sin categoría";
-    return LEGACY_CATEGORY_NAME_TO_CURRENT[raw] || raw;
 };
 
 export default function ProductCardPerfumes({ product, returnTo, isGrid = true }) {

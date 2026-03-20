@@ -10,6 +10,7 @@ import { withWholesale } from "../utils/navigation.js";
 import { formatPrice } from "../utils/price.js";
 import { Search, ShoppingCart } from "lucide-react";
 import shatha from '@/assets/shathasi.png'
+import { PERFUME_CATEGORY_DEFINITIONS } from "../utils/perfumeCategories.js";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
 
@@ -237,13 +238,19 @@ export default function Header() {
   const cartItemsCount = (store.cart || []).reduce((t, i) => t + (i.quantity || 0), 0);
 
   // Categorías para el dropdown (coinciden con las del backend)
-  const productCategories = [
-    { name: "Masculinos", route: "/categoria/perfumes-masculinos", icon: "🕴️" },
-    { name: "Femeninos", route: "/categoria/femeninos", icon: "💃" },
-    { name: "Unisex", route: "/categoria/unisex", icon: "✨" },
-    { name: "Cremas", route: "/categoria/cremas", icon: "🧴" },
-    { name: "Body Splash Victoria Secret", route: "/categoria/body-splash-victoria-secret", icon: "🌸" },
-  ];
+  const categoryIcons = {
+    1: "🕴️",
+    2: "💃",
+    3: "✨",
+    4: "🧴",
+    5: "🌸",
+    7: "🏷️",
+  };
+  const productCategories = PERFUME_CATEGORY_DEFINITIONS.map((category) => ({
+    name: category.name,
+    route: `/categoria/${category.slug}`,
+    icon: categoryIcons[category.id] || "•",
+  }));
 
   const goToContact = (e) => {
     e.preventDefault();

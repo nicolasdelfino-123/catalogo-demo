@@ -19,7 +19,8 @@ def seed_database():
         Category(name="Atomizadores", description="Tanks y RDA"),
         Category(name="Sales de Nicotina", description="Sales de nicotina"),
         Category(name="Celulares", description="Smartphones y accesorios"),
-        Category(name="Perfumes", description="Fragancias")
+        Category(name="Perfumes", description="Fragancias"),
+        Category(name="Perfumes de Diseñador", description="Fragancias de diseñador"),
 ]
     
     for c in categories:

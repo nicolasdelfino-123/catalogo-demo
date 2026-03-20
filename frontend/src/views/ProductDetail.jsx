@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { formatPrice } from "../utils/price.js";
 import { Context } from '../js/store/appContext.jsx';
 import sinImagen from '@/assets/sin_imagen.jpg'
+import { NAME_TO_SLUG } from "../utils/perfumeCategories.js";
 
 
 // --- helpers de sabores ---
@@ -40,24 +41,6 @@ const getFlavors = (product) => {
     return extractFlavorsFromDescription(product?.description || '');
 };
 
-
-// Mapa nombre de categoría -> slug (coincide con ProductGrid)
-const NAME_TO_SLUG = {
-    "Masculinos": "perfumes-masculinos",
-    "Perfumes masculinos": "perfumes-masculinos",
-    "Perfumes Masculinos": "perfumes-masculinos",
-    "Femeninos": "femeninos",
-    "Unisex": "unisex",
-    "Cremas": "cremas",
-    "Body splash victoria secret": "body-splash-victoria-secret",
-    // compatibilidad con nombres viejos
-    "Vapes Desechables": "perfumes-masculinos",
-    "Pods Recargables": "femeninos",
-    "Líquidos": "unisex",
-    "Resistencias": "cremas",
-    "Celulares": "body-splash-victoria-secret",
-    "Perfumes": "perfumes-masculinos",
-};
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
 

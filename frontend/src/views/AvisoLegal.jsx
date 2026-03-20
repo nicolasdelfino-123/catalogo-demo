@@ -1,15 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { withWholesale } from "../utils/navigation.js";
-
-
-const FOOTER_CATEGORIES = [
-    { label: "Masculinos", slug: "perfumes-masculinos" },
-    { label: "Femeninos", slug: "femeninos" },
-    { label: "Unisex", slug: "unisex" },
-    { label: "Cremas", slug: "cremas" },
-    { label: "Body Splash Victoria Secret", slug: "body-splash-victoria-secret" },
-];
+import { PERFUME_CATEGORY_DEFINITIONS as FOOTER_CATEGORIES } from "../utils/perfumeCategories.js";
 
 export default function AvisoLegal() {
 
@@ -192,7 +184,7 @@ export default function AvisoLegal() {
                                 to={withWholesale(`/categoria/${cat.slug}`)}
                                 className="block py-3 text-gray-700 font-serif hover:text-black transition-colors"
                             >
-                                {cat.label}
+                                {cat.name}
                             </Link>
                         </li>
                     ))}

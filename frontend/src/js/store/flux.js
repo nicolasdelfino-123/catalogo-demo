@@ -1,3 +1,5 @@
+import { PERFUME_CATEGORY_NAMES } from "../../utils/perfumeCategories.js";
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const getState = ({ getStore, getActions, setStore }) => {
@@ -10,7 +12,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			cart: [],
 			user: null,
 			loading: false,
-			categories: ["Masculinos", "Femeninos", "Unisex", "Cremas", "Body Splash Victoria Secret"],
+			categories: PERFUME_CATEGORY_NAMES,
 			orders: [],
 			userAddress: { address: "", phone: "" },
 			updateStatusMsg: "",

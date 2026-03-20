@@ -31,6 +31,7 @@ CATEGORY_ID_TO_NAME = {
     4: "Cremas",
     5: "Body splash victoria secret",
     6: "Perfumes",  # compatibilidad legacy
+    7: "Perfumes de Diseñador",
 }
 
 def _ensure_category_exists(category_id: int):

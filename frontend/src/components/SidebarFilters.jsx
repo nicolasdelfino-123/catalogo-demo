@@ -2,16 +2,7 @@ import { useState, useMemo } from "react"
 import { Menu, X } from "lucide-react"
 import { useNavigate } from "react-router-dom";
 import { withWholesale } from "../utils/navigation.js";
-
-
-
-const CATEGORIES = [
-    { id: 1, name: "Masculinos", slug: "perfumes-masculinos" },
-    { id: 2, name: "Femeninos", slug: "femeninos" },
-    { id: 3, name: "Unisex", slug: "unisex" },
-    { id: 4, name: "Cremas", slug: "cremas" },
-    { id: 5, name: "Body splash victoria secret", slug: "body-splash-victoria-secret" },
-];
+import { PERFUME_CATEGORY_DEFINITIONS as CATEGORIES } from "../utils/perfumeCategories.js";
 
 
 // normalizador simple (lowercase + sin tildes + colapsa espacios)

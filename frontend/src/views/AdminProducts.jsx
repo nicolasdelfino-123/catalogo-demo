@@ -2,27 +2,15 @@ import { useEffect, useRef, useState } from "react"
 import sinImagen from '@/assets/sin_imagen.jpg'
 import { Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "../utils/price.js";
+import {
+    CATEGORY_ID_TO_NAME as ID_TO_CATEGORY_NAME,
+    mapCategoryIdFromName,
+    PERFUME_CATEGORY_DEFINITIONS,
+    PERFUME_CATEGORY_NAMES,
+} from "../utils/perfumeCategories.js";
 
 
 
-
-// ----- Helpers de categorías -----
-// ----- Helpers de categorías -----
-const CATEGORY_NAME_TO_ID = {
-    "Masculinos": 1,
-    "Perfumes Masculinos": 1,
-    "Femeninos": 2,
-    "Unisex": 3,
-    "Cremas": 4,
-    "Body Splash Victoria Secret": 5,
-};
-const ID_TO_CATEGORY_NAME = Object.fromEntries(
-    Object.entries(CATEGORY_NAME_TO_ID).map(([k, v]) => [v, k])
-);
-// compatibilidad para productos viejos en categoría 6
-ID_TO_CATEGORY_NAME[6] = "Perfumes Masculinos";
-ID_TO_CATEGORY_NAME[1] = "Masculinos";
-ID_TO_CATEGORY_NAME[6] = "Masculinos";
 
 const normalizeCategoryLabel = (value = "") =>
     String(value || "")
@@ -140,17 +128,6 @@ function RichTextInput({ value = "", onChange, placeholder = "", minHeight = "12
             )}
         </div>
     );
-}
-
-function mapCategoryId(name) {
-    const n = (name || "").toLowerCase()
-    if (n.includes("mascul")) return 1
-    if (n.includes("femen")) return 2
-    if (n.includes("unisex")) return 3
-    if (n.includes("crema")) return 4
-    if (n.includes("body") || n.includes("victoria")) return 5
-    if (n.includes("perfume")) return 1
-    return 1 // default
 }
 
 const sumActiveFlavorStock = (catalog = []) =>
@@ -392,7 +369,7 @@ const clearPricingInputs = (state) => ({
 // ----- Componente principal -----
 export default function AdminProducts() {
     const [products, setProducts] = useState([])
-    const [categories] = useState(["Masculinos", "Femeninos", "Unisex", "Cremas", "Body Splash Victoria Secret"])
+    const categories = PERFUME_CATEGORY_NAMES
     const [form, setForm] = useState(null)
     const [q, setQ] = useState("")
     const [selectedCategory, setSelectedCategory] = useState("Todos")
@@ -1201,7 +1178,7 @@ export default function AdminProducts() {
                             const transformed = (raw || [])
                                 .filter((it) => !existingNames.has(cleanName(it.name || "")))
                                 .map((it) => {
-                                    const catId = it.category_id || mapCategoryId(it.category_name)
+                                    const catId = it.category_id || mapCategoryIdFromName(it.category_name)
                                     const catalog = (it.flavors || []).map((f) => ({ name: String(f), active: true, stock: 0 })) // activos + stock 0
                                     return {
                                         id: undefined,
@@ -2049,11 +2026,11 @@ export default function AdminProducts() {
                             required
                         >
                             <option value="">Selecciona categoría</option>
-                            <option value={1}>Masculinos</option>
-                            <option value={2}>Femeninos</option>
-                            <option value={3}>Unisex</option>
-                            <option value={4}>Cremas</option>
-                            <option value={5}>Body splash victoria secret</option>
+                            {PERFUME_CATEGORY_DEFINITIONS.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
                         </select>
 
                         {/* Sabores solo para 1 y 3 */}

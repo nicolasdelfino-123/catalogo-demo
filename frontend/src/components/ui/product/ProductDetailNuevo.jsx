@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Context } from "../../../js/store/appContext.jsx";
 import sinImagen from "@/assets/sin_imagen.jpg";
 import { formatPrice } from "../../../utils/price.js";
+import { getDisplayCategoryName } from "../../../utils/perfumeCategories.js";
 
 /* =========================
    HELPERS
@@ -36,33 +37,6 @@ const getFlavors = (product) => {
         return product.flavors;
 
     return extractFlavorsFromDescription(product.description || "");
-};
-
-const CATEGORY_ID_TO_NAME = {
-    1: "Masculinos",
-    2: "Femeninos",
-    3: "Unisex",
-    4: "Cremas",
-    5: "Body splash victoria secret",
-    // compatibilidad de productos viejos
-    6: "Masculinos",
-};
-
-const LEGACY_CATEGORY_NAME_TO_CURRENT = {
-    "Vapes Desechables": "Masculinos",
-    "Pods Recargables": "Femeninos",
-    "Líquidos": "Unisex",
-    "Resistencias": "Cremas",
-    "Celulares": "Body Splash Victoria Secret",
-    "Perfumes": "Masculinos",
-};
-
-const getDisplayCategoryName = (product) => {
-    const byId = CATEGORY_ID_TO_NAME[Number(product?.category_id)];
-    if (byId) return byId;
-    const raw = String(product?.category_name || "").trim();
-    if (!raw) return "";
-    return LEGACY_CATEGORY_NAME_TO_CURRENT[raw] || raw;
 };
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";

@@ -1,22 +1,13 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { withWholesale } from '../utils/navigation.js'
+import { PERFUME_CATEGORY_DEFINITIONS as FOOTER_CATEGORIES } from '../utils/perfumeCategories.js'
 
 import logofooter from "../assets/logofooter.png";
 
 const phone = "5493533459552";
 const message = encodeURIComponent(`Hola, tengo una consulta sobre el producto...`);
 const link = `https://wa.me/${phone}?text=${message}`;
-
-
-// En tu Footer.jsx — mini mapa label/slug para no volverte loco
-const FOOTER_CATEGORIES = [
-    { label: "Masculinos", slug: "perfumes-masculinos" },
-    { label: "Femeninos", slug: "femeninos" },
-    { label: "Unisex", slug: "unisex" },
-    { label: "Cremas", slug: "cremas" },
-    { label: "Body Splash Victoria Secret", slug: "body-splash-victoria-secret" },
-];
 
 const Footer = () => {
     const navigate = useNavigate();
@@ -49,7 +40,7 @@ const Footer = () => {
                                             state={{ fromFooter: true }}     // 👈 Marca que viene desde el footer
                                             className="relative hover:text-amber-300 transition-all duration-300 after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-amber-400 after:transition-all after:duration-300 hover:after:w-full"
                                         >
-                                            {c.label}
+                                            {c.name}
                                         </Link>
                                     </li>
                                 ))}

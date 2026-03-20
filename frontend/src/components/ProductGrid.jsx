@@ -6,6 +6,7 @@ import SidebarFilters from "./SidebarFilters"
 import Modal from "./Modal.jsx"
 import { ChevronRight, ChevronLeft } from "lucide-react"
 import { withWholesale } from "../utils/navigation";
+import { SLUG_TO_ID, SLUG_TO_NAME } from "../utils/perfumeCategories.js";
 
 
 // --- Persistencia ligera en sessionStorage ---
@@ -22,36 +23,6 @@ const writeGridState = (key, state) => {
   try {
     sessionStorage.setItem(key, JSON.stringify(state));
   } catch { }
-};
-
-const SLUG_TO_NAME = {
-  "perfumes-masculinos": "Masculinos",
-  "femeninos": "Femeninos",
-  "unisex": "Unisex",
-  "cremas": "Cremas",
-  "body-splash-victoria-secret": "Body splash victoria secret",
-  // compatibilidad URLs viejas
-  "vapes-desechables": "Masculinos",
-  "pods-recargables": "Femeninos",
-  "liquidos": "Unisex",
-  "resistencias": "Cremas",
-  "celulares": "Body splash victoria secret",
-  "perfumes": "Masculinos",
-};
-
-const SLUG_TO_ID = {
-  "perfumes-masculinos": 1,
-  "femeninos": 2,
-  "unisex": 3,
-  "cremas": 4,
-  "body-splash-victoria-secret": 5,
-  // compatibilidad URLs viejas
-  "vapes-desechables": 1,
-  "pods-recargables": 2,
-  "liquidos": 3,
-  "resistencias": 4,
-  "celulares": 5,
-  "perfumes": 1,
 };
 
 const normalizeBrand = (b = "") =>
