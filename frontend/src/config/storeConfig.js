@@ -32,7 +32,7 @@ export const storeConfig = {
 
     media: {
         heroImage: "banner_arabe.jpg",
-        footerLogo: "logofooter.png",
+        footerLogo: "tutu_si.png",
     },
 
     map: {

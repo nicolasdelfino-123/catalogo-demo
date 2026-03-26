@@ -9,7 +9,7 @@ import zarpados from '@/assets/zarpados-22.png'
 import { withWholesale } from "../utils/navigation.js";
 import { formatPrice } from "../utils/price.js";
 import { Search, ShoppingCart } from "lucide-react";
-import shatha from '@/assets/shathasi.png'
+import shatha from '@/assets/tutu_si.png'
 import { PERFUME_CATEGORY_DEFINITIONS } from "../utils/perfumeCategories.js";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
@@ -338,7 +338,7 @@ export default function Header() {
                 <img
                   src={shatha}
                   alt="Shatha"
-                  className="h-[110px] md:h-[95px] object-contain transition-all duration-300"
+                  className="mt-[-10px] md:mt-[-10px] h-[62px] md:h-[63px] object-contain transition-all duration-300"
                 />
               </Link>
             </div>

@@ -23,7 +23,7 @@ const Footer = () => {
                             <img
                                 src={logofooter}
                                 alt="Shatha"
-                                className="h-56 mb-3 -mt-13 opacity-95"
+                                className="h-[190px] w-[180px] md:h-[220px] md:w-[220px] mt-[-20px] md:mt-[-40px] mb-[10px] md:mb-[20px] opacity-95 object-contain"
                             />
 
                             <p className="text-gray-400 text-sm max-w-xs -mt-5 text-center">
