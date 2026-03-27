@@ -196,3 +196,4 @@ backend/venv/
 *.log
 temp/
 tmp/
+.sfdx/
