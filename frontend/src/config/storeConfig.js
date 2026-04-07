@@ -26,8 +26,8 @@ export const storeConfig = {
     },
 
     business: {
-        address: "Vélez Sarsfield 303, Las Varillas, Córdoba",
-        hours: "Lunes a Sábado 8:00–12:00 / 17:00–20:15",
+        address: "Tu Dirección, Tu ciudad, Tu Provincia",
+        hours: "Lunes a Sábado 8:00–12:00 / 17:00–20:00",
     },
 
     media: {
